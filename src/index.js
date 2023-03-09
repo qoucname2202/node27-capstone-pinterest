@@ -7,6 +7,7 @@ const config = require('./config');
 let rootRoute = require('./routes');
 
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(bodyParser.json({ limit: '50mb' }));
 app.use(cors());
 app.use(morgan('common'));

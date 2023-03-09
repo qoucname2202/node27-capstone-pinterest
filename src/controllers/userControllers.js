@@ -82,7 +82,7 @@ const userControllers = {
   },
   getFollowee: async (req, res) => {
     try {
-      responseMess.success(res, 'Upload avatar', 'Successfully!');
+      responseMess.success(res, 'Get all followee', 'Successfully!');
     } catch (err) {
       responseMess.error(res, 'Internal Server Error');
     }

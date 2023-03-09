@@ -1,16 +1,21 @@
 const responseMess = require('../config/response');
 const moment = require('moment');
 const config = require('../config');
+const validators = require('../validators');
 
 const authControllers = {
   signin: async (req, res) => {
     try {
-      responseMess.success(res, 'Hello SignIn', 'Signin successfully!');
+      let { error, value } = await validators.signinValidate(req.body);
+      if (!error) {
+        console.log(value);
+      } else {
+        responseMess.badRequest(res, '', error.details[0].message);
+      }
     } catch (err) {
-      responseMess.error(res, 'Internal Server Error');
+      responseMess.error(res, 'Internal Server Error!');
     }
   },
-
   signup: async (req, res) => {
     try {
       responseMess.success(res, 'Hello Signup', 'Signup successfully!');

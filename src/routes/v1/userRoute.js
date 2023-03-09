@@ -2,7 +2,7 @@ const express = require('express');
 const userControllers = require('../../controllers/userControllers');
 const userRoute = express.Router();
 
-userRoute.get('', userControllers.getAllUser);
+userRoute.get('/', userControllers.getAllUser);
 userRoute.get('/profile', userControllers.getProfile);
 userRoute.get('/save', userControllers.savedImage);
 userRoute.get('/change-password', userControllers.changePassword);

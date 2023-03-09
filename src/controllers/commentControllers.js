@@ -5,7 +5,7 @@ const config = require('../config');
 const commentControllers = {
   getCommentByImageId: async (req, res) => {
     try {
-      responseMess.success(res, 'Get comment by image id', 'Successfully!');
+      responseMess.success(res, 'Get comment by imageID', 'Successfully!');
     } catch (err) {
       responseMess.error(res, 'Internal Server Error');
     }
