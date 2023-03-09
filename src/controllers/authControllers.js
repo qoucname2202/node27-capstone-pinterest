@@ -18,9 +18,14 @@ const authControllers = {
   },
   signup: async (req, res) => {
     try {
-      responseMess.success(res, 'Hello Signup', 'Signup successfully!');
+      let { error, value } = await validators.signupValidate(req.body);
+      if (!error) {
+        console.log(value);
+      } else {
+        responseMess.badRequest(res, '', error.details[0].message);
+      }
     } catch (err) {
-      responseMess.error(res, 'Internal Server Error');
+      responseMess.error(res, 'Internal Server Error!');
     }
   },
   signout: async (req, res) => {

@@ -11,15 +11,34 @@ const validators = {
       password: Joi.string().min(8).pattern(passwordRegex).label('password').required().messages({
         'string.empty': ValidateMessage.ERROR_PASSWORD.EMPTY,
         'string.min': ValidateMessage.ERROR_PASSWORD.LENGTH,
-        // Strong password
         'string.pattern.base': ValidateMessage.ERROR_PASSWORD.PATTERN,
       }),
     });
     return userSchema.validate(data, { stripUnknown: true, abortEarly: false });
   },
   signupValidate: (data) => {
-    const userSchema = Joi.object({});
-    return userSchema.validateAsync(data, { stripUnknown: true, abortEarly: false });
+    const userSchema = Joi.object({
+      email: Joi.string().email().required().messages({
+        'string.empty': ValidateMessage.ERROR_EMAIL.EMPTY,
+        'string.email': ValidateMessage.ERROR_EMAIL.EMAIL_FORMAT,
+      }),
+      password: Joi.string().min(8).pattern(passwordRegex).required().messages({
+        'string.empty': ValidateMessage.ERROR_PASSWORD.EMPTY,
+        'string.min': ValidateMessage.ERROR_PASSWORD.LENGTH,
+        'string.pattern.base': ValidateMessage.ERROR_PASSWORD.PATTERN,
+      }),
+      name: Joi.string().min(3).max(30).required().messages({
+        'string.empty': ValidateMessage.ERROR_NAME.EMPTY,
+        'string.min': ValidateMessage.ERROR_NAME.MIN_LENGTH,
+        'string.max': ValidateMessage.ERROR_NAME.MAX_LENGTH,
+        'string.base': ValidateMessage.ERROR_NAME.NAME_FORMAT,
+      }),
+      age: Joi.number().integer().required().messages({
+        'number.empty': ValidateMessage.ERROR_AGE.EMPTY,
+        'number.base': ValidateMessage.ERROR_AGE.AGE_FORMAT,
+      }),
+    });
+    return userSchema.validate(data, { stripUnknown: true, abortEarly: false });
   },
   commentValidate: (data) => {
     const commentSchema = Joi.object({});

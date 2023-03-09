@@ -8,6 +8,16 @@ const ValidateMessage = {
     EMAIL_FORMAT: 'Please enter a valid email address.',
     EMPTY: 'Email cannot be an empty field',
   },
+  ERROR_AGE: {
+    AGE_FORMAT: 'Age must be a number',
+    EMPTY: 'Age cannot be an empty field',
+  },
+  ERROR_NAME: {
+    EMPTY: 'Name cannot be an empty field',
+    MIN_LENGTH: 'The length of the parameter should be more than 3 character',
+    MAX_LENGTH: 'The length of the parameter must be a string with a maximum 30',
+    NAME_FORMAT: 'Name must be a string',
+  },
 };
 
 module.exports = ValidateMessage;
