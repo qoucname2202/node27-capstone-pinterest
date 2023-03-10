@@ -7,4 +7,5 @@ module.exports = {
   hashRounds: process.env.SALT_OR_ROUNDS,
   expriesToken: process.env.JWT_EXPIRES_IN,
   expriesRefreshToken: process.env.JWT_REFRESH_EXPIRES_IN,
+  refreshTokenName: process.env.SECRET_COOKIE_NAME,
 };

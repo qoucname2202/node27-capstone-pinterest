@@ -2,9 +2,11 @@ const responseMess = require('../config/response');
 const moment = require('moment');
 const validators = require('../validators');
 const { hashPassword, isCorrectPassword } = require('../util');
+const config = require('../config');
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
-const { generateToken, generateRefreshToken } = require('../middlewares/jwt');
+const HttpStatusCode = require('../exceptions/HttpStatusCode');
+const { generateToken, generateRefreshToken, checkRefreshToken } = require('../middlewares/jwt');
 
 const authControllers = {
   signin: async (req, res) => {
@@ -32,7 +34,7 @@ const authControllers = {
               },
             });
             // Save refresh token to cookies
-            res.cookie('refreshToken', newRefreshToken, {
+            res.cookie(config.refreshTokenName, newRefreshToken, {
               httpOnly: true,
               secure: false,
               path: '/',
@@ -107,7 +109,36 @@ const authControllers = {
 
   signout: async (req, res) => {
     try {
-      responseMess.success(res, 'Hello Signout', 'Signout successfully!');
+      const cookie = req.cookies;
+      if (!cookie || !cookie.refreshToken) {
+        responseMess.badRequest(res, '', 'No refresh token in cookies!');
+        return;
+      } else {
+        // Update refresh_token feild set value null in database
+        let user = checkRefreshToken(cookie.refreshToken);
+        let { email } = user;
+        await prisma.user.update({
+          where: {
+            email: email,
+          },
+          data: {
+            refresh_token: null,
+          },
+        });
+        // Clear coookie
+        return res
+          .status(200)
+          .clearCookie(config.refreshTokenName, {
+            httpOnly: true,
+            secure: true,
+          })
+          .json({
+            statusCode: HttpStatusCode.OK,
+            message: 'Successfully',
+            content: 'Signout successfully!',
+            dateTime: moment().format(),
+          });
+      }
     } catch (err) {
       responseMess.error(res, 'Internal Server Error');
     }

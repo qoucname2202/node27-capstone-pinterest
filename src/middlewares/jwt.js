@@ -16,7 +16,12 @@ const jwtController = {
     return refToken;
   },
 
-  checkToken: (token) => {},
+  checkRefreshToken: (refToken) => {
+    const user = jwt.verify(refToken, refreshToken);
+    return user;
+  },
+
+  checkAccessToken: (token) => {},
 
   verifyToken: () => {},
 
