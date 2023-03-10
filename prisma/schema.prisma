@@ -66,7 +66,7 @@ model user {
   name                              String       @db.VarChar(255)
   age                               Int?
   avatar                            String?      @db.Text
-  role                              Boolean?     @default(false)
+  isAdmin                           Boolean?     @default(false)
   is_blocked                        Boolean?     @default(false)
   refresh_token                     String?      @db.VarChar(500)
   password_change_at                String?      @db.VarChar(500)
