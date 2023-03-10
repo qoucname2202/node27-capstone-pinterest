@@ -1,0 +1,82 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model comment {
+  comment_id   Int       @default(autoincrement())
+  user_id      Int
+  image_id     Int
+  content      String    @db.Text
+  comment_star Int?
+  date_comment DateTime? @default(now()) @db.Timestamp(0)
+  updated_at   DateTime? @db.Timestamp(0)
+  image        image     @relation(fields: [image_id], references: [image_id], onDelete: NoAction, onUpdate: NoAction, map: "FK_IMG_COMMENT")
+  user         user      @relation(fields: [user_id], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "FR_USER_COMMENT")
+
+  @@id([comment_id, user_id, image_id])
+  @@index([image_id], map: "FK_IMG_COMMENT")
+  @@index([user_id], map: "FR_USER_COMMENT")
+}
+
+model follows {
+  follower_id                    Int
+  followee_id                    Int
+  created_at                     DateTime? @default(now()) @db.Timestamp(0)
+  user_follows_followee_idTouser user      @relation("follows_followee_idTouser", fields: [followee_id], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "FK_FEE")
+  user_follows_follower_idTouser user      @relation("follows_follower_idTouser", fields: [follower_id], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "FR_FER")
+
+  @@id([follower_id, followee_id])
+  @@index([followee_id], map: "FK_FEE")
+}
+
+model image {
+  image_id    Int          @id @default(autoincrement())
+  image_name  String       @db.VarChar(255)
+  url         String       @db.Text
+  description String?      @db.Text
+  created_at  DateTime?    @default(now()) @db.Timestamp(0)
+  user_id     Int
+  comment     comment[]
+  user        user         @relation(fields: [user_id], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "FR_UI_USER")
+  save_image  save_image[]
+
+  @@index([user_id], map: "FR_UI_USER")
+}
+
+model save_image {
+  user_id   Int
+  image_id  Int
+  date_save DateTime? @default(now()) @db.Timestamp(0)
+  image     image     @relation(fields: [image_id], references: [image_id], onDelete: NoAction, onUpdate: NoAction, map: "FK_IMG_SAVED")
+  user      user      @relation(fields: [user_id], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "FR_USER_SAVED")
+
+  @@id([user_id, image_id])
+  @@index([image_id], map: "FK_IMG_SAVED")
+}
+
+model user {
+  user_id                           Int          @id @default(autoincrement())
+  email                             String       @unique(map: "email") @db.VarChar(255)
+  password                          String       @db.VarChar(255)
+  name                              String       @db.VarChar(255)
+  age                               Int?
+  avatar                            String?      @db.Text
+  role                              Boolean?     @default(false)
+  is_blocked                        Boolean?     @default(false)
+  refresh_token                     String?      @db.VarChar(500)
+  password_change_at                String?      @db.VarChar(500)
+  password_reset_token              String?      @db.VarChar(500)
+  password_reset_expires            String?      @db.VarChar(500)
+  created_at                        DateTime?    @default(now()) @db.Timestamp(0)
+  update_at                         DateTime?    @db.Timestamp(0)
+  comment                           comment[]
+  follows_follows_followee_idTouser follows[]    @relation("follows_followee_idTouser")
+  follows_follows_follower_idTouser follows[]    @relation("follows_follower_idTouser")
+  image                             image[]
+  save_image                        save_image[]
+}

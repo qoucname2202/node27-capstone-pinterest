@@ -24,9 +24,23 @@ const userControllers = {
       responseMess.error(res, 'Internal Server Error');
     }
   },
-  changePassword: async (req, res) => {
+  refreshToken: async (req, res) => {
     try {
-      responseMess.success(res, 'Change-Password', 'Successfully!');
+      responseMess.success(res, 'Refresh token', 'Successfully!');
+    } catch (err) {
+      responseMess.error(res, 'Internal Server Error');
+    }
+  },
+  forgotPassword: async (req, res) => {
+    try {
+      responseMess.success(res, 'Forgot password', 'Successfully!');
+    } catch (err) {
+      responseMess.error(res, 'Internal Server Error');
+    }
+  },
+  resetPassword: async (req, res) => {
+    try {
+      responseMess.success(res, 'Reset Password', 'Successfully!');
     } catch (err) {
       responseMess.error(res, 'Internal Server Error');
     }
