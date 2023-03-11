@@ -18,6 +18,12 @@ const ValidateMessage = {
     MAX_LENGTH: 'The length of the parameter must be a string with a maximum 30',
     NAME_FORMAT: 'Name must be a string',
   },
+  ERROR_TOKEN: {
+    EMPTY: 'Token cannot be an empty field',
+    MIN_LENGTH: 'The length of token should be more than 3 character',
+    MAX_LENGTH: 'The length of token must be a string with a maximum 250',
+    NAME_FORMAT: 'Token must be a string',
+  },
 };
 
 module.exports = ValidateMessage;

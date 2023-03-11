@@ -3,9 +3,10 @@ const moment = require('moment');
 const config = require('../config');
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
+const validators = require('../validators');
 const Joi = require('joi');
 const crypto = require('crypto');
-const { createPasswordChangedToken, sendMail } = require('../util');
+const { createPasswordChangedToken, sendMail, hashPassword } = require('../util');
 const { generateToken, generateRefreshToken, checkRefreshToken, checkAccessToken } = require('../middlewares/jwt');
 const ValidateMessage = require('../exceptions/ValidateMessage');
 
@@ -123,10 +124,38 @@ const userControllers = {
     }
   },
   resetPassword: async (req, res) => {
-    try {
-      responseMess.success(res, 'Reset Password', 'Successfully!');
-    } catch (err) {
-      responseMess.error(res, 'Internal Server Error');
+    let { error, value } = await validators.resetPassword(req.body);
+    if (!error) {
+      let { token } = value;
+      const passwordResetToken = crypto.createHash('sha256').update(token).digest('hex');
+      const userInfo = await prisma.user.findMany({
+        where: {
+          password_reset_token: passwordResetToken,
+        },
+      });
+      if (userInfo) {
+        let { email } = userInfo;
+        let result = await prisma.user.updateMany({
+          where: {
+            email: email,
+          },
+          data: {
+            password: hashPassword(value.password),
+            password_reset_token: null,
+            password_reset_expires: null,
+            password_change_at: moment().format(),
+          },
+        });
+        if (result) {
+          return responseMess.success(res, '', 'Change password successfully!');
+        } else {
+          return responseMess.badRequest(res, '', 'Something went wrong!');
+        }
+      } else {
+        return responseMess.notFound(res, '', 'Invalid reset token!');
+      }
+    } else {
+      return responseMess.badRequest(res, '', error.details[0].message);
     }
   },
   getAllUser: async (req, res) => {
