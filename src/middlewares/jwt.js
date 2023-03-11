@@ -21,7 +21,10 @@ const jwtController = {
     return user;
   },
 
-  checkAccessToken: (token) => {},
+  checkAccessToken: (token) => {
+    const user = jwt.verify(token, secretToken);
+    return user;
+  },
 
   verifyToken: () => {},
 

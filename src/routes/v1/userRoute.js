@@ -6,6 +6,7 @@ userRoute.get('/', userControllers.getAllUser);
 userRoute.get('/profile', userControllers.getProfile);
 userRoute.get('/save', userControllers.savedImage);
 userRoute.post('/refresh-token', userControllers.refreshToken);
+userRoute.post('/test-token', userControllers.testToken);
 userRoute.get('/forgot-password', userControllers.forgotPassword);
 userRoute.put('/reset-password', userControllers.resetPassword);
 userRoute.get('/images', userControllers.getImagesUserCreate);

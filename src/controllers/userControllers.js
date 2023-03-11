@@ -3,7 +3,7 @@ const moment = require('moment');
 const config = require('../config');
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
-const { generateToken, generateRefreshToken, checkRefreshToken } = require('../middlewares/jwt');
+const { generateToken, generateRefreshToken, checkRefreshToken, checkAccessToken } = require('../middlewares/jwt');
 
 const userControllers = {
   refreshToken: async (req, res) => {
@@ -45,6 +45,31 @@ const userControllers = {
       }
     } catch (err) {
       responseMess.error(res, 'Internal Server Error');
+    }
+  },
+  testToken: async (req, res) => {
+    try {
+      if (req?.headers?.authorization?.startsWith('Bearer')) {
+        const { authorization } = req.headers;
+        let newToken = authorization.replace('Bearer ', '');
+        let user = checkAccessToken(newToken);
+        if (user) {
+          let { user_id, name, email, isAdmin, iat, exp } = user;
+          let infoToken = {
+            user_id,
+            email,
+            name,
+            isAdmin,
+            iat: moment(iat * 1000).format(),
+            exp: moment(exp * 1000).format(),
+          };
+          return responseMess.success(res, infoToken, 'Successfully!');
+        }
+      } else {
+        return responseMess.badRequest(res, '', 'Required Authentication!');
+      }
+    } catch (err) {
+      responseMess.unauthorized(res, '', err.message);
     }
   },
   forgotPassword: async (req, res) => {
