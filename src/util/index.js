@@ -1,4 +1,7 @@
 const bcrypt = require('bcrypt');
+const crypto = require('crypto');
+const nodemailer = require('nodemailer');
+const { emailAppPassword, emailName } = require('../config');
 const { hashRounds } = require('../config/index');
 
 const hashPassword = (password) => {
@@ -11,10 +14,34 @@ const isCorrectPassword = (password, hashPassword) => {
   return checkPassword;
 };
 
-const createPasswordChangedToken = () => {};
+const createPasswordChangedToken = () => {
+  const resetToken = crypto.randomBytes(32).toString('hex');
+  return resetToken;
+};
+
+const sendMail = async ({ email, html }) => {
+  let transporter = nodemailer.createTransport({
+    host: 'smtp.gmail.com',
+    port: 587,
+    secure: false,
+    auth: {
+      user: emailName,
+      pass: emailAppPassword,
+    },
+  });
+  let info = await transporter.sendMail({
+    from: '"Cybersoft" <no-relply@cybersoft.com>',
+    to: email,
+    subject: 'Forgot password',
+    html: html,
+  });
+
+  return info;
+};
 
 module.exports = {
   hashPassword,
   isCorrectPassword,
   createPasswordChangedToken,
+  sendMail,
 };

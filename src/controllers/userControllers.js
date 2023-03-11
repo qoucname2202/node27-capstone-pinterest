@@ -3,7 +3,11 @@ const moment = require('moment');
 const config = require('../config');
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
+const Joi = require('joi');
+const crypto = require('crypto');
+const { createPasswordChangedToken, sendMail } = require('../util');
 const { generateToken, generateRefreshToken, checkRefreshToken, checkAccessToken } = require('../middlewares/jwt');
+const ValidateMessage = require('../exceptions/ValidateMessage');
 
 const userControllers = {
   refreshToken: async (req, res) => {
@@ -74,7 +78,46 @@ const userControllers = {
   },
   forgotPassword: async (req, res) => {
     try {
-      responseMess.success(res, 'Forgot password', 'Successfully!');
+      let { email } = req.query;
+      // Validation email using query params
+      const schema = Joi.object({
+        email: Joi.string().email().required().messages({
+          'string.empty': ValidateMessage.ERROR_EMAIL.EMPTY,
+          'string.email': ValidateMessage.ERROR_EMAIL.EMAIL_FORMAT,
+        }),
+      });
+      let { error, value } = schema.validate({ email }, { stripUnknown: true, abortEarly: false });
+      if (!error) {
+        const userInfo = await prisma.user.findUnique({
+          where: {
+            email: email,
+          },
+        });
+        if (userInfo) {
+          const resetToken = createPasswordChangedToken();
+          const passwordResetToken = crypto.createHash('sha256').update(resetToken).digest('hex');
+          const passwordResetExpires = moment(Date.now() + 15 * 60 * 1000).format();
+          await prisma.user.update({
+            where: {
+              email: email,
+            },
+            data: {
+              password_reset_token: passwordResetToken,
+              password_reset_expires: passwordResetExpires,
+            },
+          });
+          const html = `Please click on the link below to change your password. This link will expire 15 minutes. <a href=${config.urlServer}/api/v1/users/reset-password/${resetToken}>Click here</a>`;
+          const content = { email, html };
+          const result = await sendMail(content);
+          if (result) {
+            return responseMess.success(res, result, 'Send mail change password successfully!');
+          }
+        } else {
+          return responseMess.notFound(res, '', 'User does not exist!');
+        }
+      } else {
+        return responseMess.badRequest(res, '', error.details[0].message);
+      }
     } catch (err) {
       responseMess.error(res, 'Internal Server Error');
     }

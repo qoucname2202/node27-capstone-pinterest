@@ -8,4 +8,7 @@ module.exports = {
   expriesToken: process.env.JWT_EXPIRES_IN,
   expriesRefreshToken: process.env.JWT_REFRESH_EXPIRES_IN,
   refreshTokenName: process.env.SECRET_COOKIE_NAME,
+  emailAppPassword: process.env.EMAIL_APP_PASSWORD,
+  emailName: process.env.EMAIL_NAME,
+  urlServer: process.env.SERBER_URL,
 };
