@@ -1,9 +1,10 @@
 const express = require('express');
 const userControllers = require('../../controllers/userControllers');
+const { verifyToken, authAdmin } = require('../../middlewares/jwt');
 const userRoute = express.Router();
 
-userRoute.get('/', userControllers.getAllUser);
-userRoute.get('/profile', userControllers.getProfile);
+userRoute.get('/', authAdmin, userControllers.getAllUser);
+userRoute.get('/profile', verifyToken, userControllers.getProfile);
 userRoute.get('/save', userControllers.savedImage);
 userRoute.post('/refresh-token', userControllers.refreshToken);
 userRoute.post('/test-token', userControllers.testToken);

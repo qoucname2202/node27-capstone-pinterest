@@ -87,7 +87,7 @@ const userControllers = {
           'string.email': ValidateMessage.ERROR_EMAIL.EMAIL_FORMAT,
         }),
       });
-      let { error, value } = schema.validate({ email }, { stripUnknown: true, abortEarly: false });
+      let { error } = schema.validate({ email }, { stripUnknown: true, abortEarly: false });
       if (!error) {
         const userInfo = await prisma.user.findUnique({
           where: {
