@@ -133,7 +133,6 @@ const userControllers = {
           password_reset_token: passwordResetToken,
         },
       });
-      console.log(userInfo);
       if (userInfo) {
         let { email } = userInfo;
         let result = await prisma.user.update({
@@ -210,7 +209,27 @@ const userControllers = {
   },
   searchUser: async (req, res) => {
     try {
-      responseMess.success(res, 'Search user', 'Successfully!');
+      let { keyword } = req.query;
+      let nameFormat = keyword.trim().toLowerCase();
+      let result = await prisma.user.findMany({
+        where: {
+          name: {
+            contains: nameFormat,
+          },
+        },
+        select: {
+          user_id: true,
+          email: true,
+          name: true,
+          age: true,
+          avatar: true,
+          created_at: true,
+          update_at: true,
+        },
+      });
+      if (result) {
+        return responseMess.success(res, result, 'Successfully!');
+      }
     } catch (err) {
       responseMess.error(res, 'Internal Server Error');
     }

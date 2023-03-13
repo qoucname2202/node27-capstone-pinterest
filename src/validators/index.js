@@ -67,4 +67,3 @@ const validators = {
 };
 
 module.exports = validators;
-//   'string.max': ValidateMessage.ERROR_TOKEN.MAX_LENGTH,

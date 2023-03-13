@@ -74,6 +74,25 @@
 
 /**
  * @swagger
+ * /api/v1/users/search:
+ *  get:
+ *      tags: [User]
+ *      parameters:
+ *       - in: query
+ *         name: keyword
+ *         type: string
+ *       - in: header
+ *         description: Please enter Bearer [token]
+ *         name: Authorization
+ *         required: true
+ *         type: string
+ *      responses:
+ *          200:
+ *              description: success
+ */
+
+/**
+ * @swagger
  * /api/v1/users/forgot-password:
  *  get:
  *      tags: [User]
