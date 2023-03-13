@@ -179,36 +179,31 @@ const userControllers = {
   },
   getProfile: async (req, res) => {
     try {
-      responseMess.success(res, 'Get user profile', 'Successfully!');
-    } catch (err) {
-      responseMess.error(res, 'Internal Server Error');
-    }
-  },
-  savedImage: async (req, res) => {
-    try {
-      responseMess.success(res, 'Save images', 'Successfully!');
-    } catch (err) {
-      responseMess.error(res, 'Internal Server Error');
-    }
-  },
-
-  getImagesUserCreate: async (req, res) => {
-    try {
-      responseMess.success(res, 'Get images user create', 'Successfully!');
-    } catch (err) {
-      responseMess.error(res, 'Internal Server Error');
-    }
-  },
-  getImagesUserSaved: async (req, res) => {
-    try {
-      responseMess.success(res, 'Get images user saved', 'Successfully!');
-    } catch (err) {
-      responseMess.error(res, 'Internal Server Error');
-    }
-  },
-  updateProfile: async (req, res) => {
-    try {
-      responseMess.success(res, 'Update profile', 'Successfully!');
+      if (req?.headers?.authorization?.startsWith('Bearer')) {
+        const { authorization } = req.headers;
+        let newToken = authorization.replace('Bearer ', '');
+        let userSchema = checkAccessToken(newToken);
+        if (userSchema) {
+          let { user_id } = userSchema;
+          const result = await prisma.user.findUnique({
+            where: {
+              user_id: user_id,
+            },
+            select: {
+              user_id: true,
+              email: true,
+              name: true,
+              age: true,
+              avatar: true,
+              created_at: true,
+              update_at: true,
+            },
+          });
+          return responseMess.success(res, result, 'Successfully!');
+        }
+      } else {
+        return responseMess.badRequest(res, '', 'Required Authentication!');
+      }
     } catch (err) {
       responseMess.error(res, 'Internal Server Error');
     }
@@ -220,6 +215,13 @@ const userControllers = {
       responseMess.error(res, 'Internal Server Error');
     }
   },
+  updateProfile: async (req, res) => {
+    try {
+      responseMess.success(res, 'Update profile', 'Successfully!');
+    } catch (err) {
+      responseMess.error(res, 'Internal Server Error');
+    }
+  },
   uploadAvatar: async (req, res) => {
     try {
       responseMess.success(res, 'Upload avatar', 'Successfully!');
@@ -227,6 +229,7 @@ const userControllers = {
       responseMess.error(res, 'Internal Server Error');
     }
   },
+
   getFollower: async (req, res) => {
     try {
       responseMess.success(res, 'Get follower', 'Successfully!');
@@ -251,6 +254,27 @@ const userControllers = {
   searchFollowee: async (req, res) => {
     try {
       responseMess.success(res, 'Search followee', 'Successfully!');
+    } catch (err) {
+      responseMess.error(res, 'Internal Server Error');
+    }
+  },
+  savedImage: async (req, res) => {
+    try {
+      responseMess.success(res, 'Save images', 'Successfully!');
+    } catch (err) {
+      responseMess.error(res, 'Internal Server Error');
+    }
+  },
+  getImagesUserCreate: async (req, res) => {
+    try {
+      responseMess.success(res, 'Get images user create', 'Successfully!');
+    } catch (err) {
+      responseMess.error(res, 'Internal Server Error');
+    }
+  },
+  getImagesUserSaved: async (req, res) => {
+    try {
+      responseMess.success(res, 'Get images user saved', 'Successfully!');
     } catch (err) {
       responseMess.error(res, 'Internal Server Error');
     }
