@@ -128,14 +128,15 @@ const userControllers = {
     if (!error) {
       let { token } = value;
       const passwordResetToken = crypto.createHash('sha256').update(token).digest('hex');
-      const userInfo = await prisma.user.findMany({
+      const userInfo = await prisma.user.findFirst({
         where: {
           password_reset_token: passwordResetToken,
         },
       });
+      console.log(userInfo);
       if (userInfo) {
         let { email } = userInfo;
-        let result = await prisma.user.updateMany({
+        let result = await prisma.user.update({
           where: {
             email: email,
           },
@@ -160,7 +161,18 @@ const userControllers = {
   },
   getAllUser: async (req, res) => {
     try {
-      responseMess.success(res, 'Get all user', 'Successfully!');
+      let result = await prisma.user.findMany({
+        select: {
+          user_id: true,
+          email: true,
+          name: true,
+          age: true,
+          avatar: true,
+        },
+      });
+      if (result) {
+        return responseMess.success(res, result, 'Successfully!');
+      }
     } catch (err) {
       responseMess.error(res, 'Internal Server Error');
     }
