@@ -5,7 +5,7 @@ const commentRoute = express.Router();
 
 commentRoute.get('/getAll', verifyToken, commentControllers.getCommentByImageId);
 commentRoute.post('/insert', verifyToken, commentControllers.insertComment);
-commentRoute.get('/update', verifyToken, commentControllers.updateComment);
+commentRoute.put('/update', verifyToken, commentControllers.updateComment);
 commentRoute.get('/delete/:id', verifyToken, commentControllers.deleteComment);
 
 module.exports = commentRoute;

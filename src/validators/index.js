@@ -78,9 +78,25 @@ const validators = {
         'number.base': ValidateMessage.ERROR_ID_NUMB.NUMB_FORMAT,
       }),
       content: Joi.string().min(3).required().messages({
-        'string.empty': ValidateMessage.ERROR_NAME.EMPTY,
-        'string.min': ValidateMessage.ERROR_NAME.MIN_LENGTH,
-        'string.base': ValidateMessage.ERROR_NAME.NAME_FORMAT,
+        'string.empty': ValidateMessage.ERROR_CONTENT.EMPTY,
+        'string.min': ValidateMessage.ERROR_CONTENT.MIN_LENGTH,
+        'string.base': ValidateMessage.ERROR_CONTENT.NAME_FORMAT,
+      }),
+    });
+    return commentSchema.validate(data, { stripUnknown: true, abortEarly: false });
+  },
+  contentValidate: (data) => {
+    const commentSchema = Joi.object({
+      content: Joi.string().min(3).required().messages({
+        'string.empty': ValidateMessage.ERROR_CONTENT.EMPTY,
+        'string.min': ValidateMessage.ERROR_CONTENT.MIN_LENGTH,
+        'string.base': ValidateMessage.ERROR_CONTENT.NAME_FORMAT,
+      }),
+      comment_star: Joi.number().integer().min(1).max(5).required().messages({
+        'number.empty': ValidateMessage.ERROR_STAR_COMMENT.EMPTY,
+        'number.base': ValidateMessage.ERROR_STAR_COMMENT.STAR_FORMAT,
+        'number.min': ValidateMessage.ERROR_STAR_COMMENT.MIN_LENGTH,
+        'number.max': ValidateMessage.ERROR_STAR_COMMENT.MAX_LENGTH,
       }),
     });
     return commentSchema.validate(data, { stripUnknown: true, abortEarly: false });
