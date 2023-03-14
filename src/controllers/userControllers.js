@@ -7,7 +7,7 @@ const validators = require('../validators');
 const Joi = require('joi');
 const crypto = require('crypto');
 const { format } = require('date-fns');
-const { createPasswordChangedToken, sendMail, hashPassword, formatTimeStamp } = require('../util');
+const { createPasswordChangedToken, sendMail, hashPassword, getInfoFollower, getInfoFollowee } = require('../util');
 const { generateToken, generateRefreshToken, checkRefreshToken, checkAccessToken } = require('../middlewares/jwt');
 const ValidateMessage = require('../exceptions/ValidateMessage');
 
@@ -326,7 +326,7 @@ const userControllers = {
                 },
               });
               if (checkUserFollow.length === 0) {
-                let result = await prisma.follows.create({
+                let result = await prisma.follows.createMany({
                   data: {
                     follower_id: Number(user_id),
                     followee_id: Number(req.query.user_id),
@@ -334,7 +334,14 @@ const userControllers = {
                   },
                 });
                 if (result) {
-                  return responseMess.success(res, result, 'User has been followed!');
+                  return responseMess.success(
+                    res,
+                    {
+                      follower_id: Number(user_id),
+                      followee_id: Number(req.query.user_id),
+                    },
+                    'User has been followed!',
+                  );
                 }
               } else {
                 return responseMess.badRequest(res, '', 'You already follow this user!');
@@ -401,7 +408,56 @@ const userControllers = {
   },
   getFollower: async (req, res) => {
     try {
-      responseMess.success(res, 'Get follower', 'Successfully!');
+      if (req?.headers?.authorization?.startsWith('Bearer')) {
+        const { authorization } = req.headers;
+        let newToken = authorization.replace('Bearer ', '');
+        let userSchema = checkAccessToken(newToken);
+        if (userSchema) {
+          let { user_id } = userSchema;
+          let result = await prisma.follows.findMany({
+            where: {
+              followee_id: Number(user_id),
+            },
+            include: {
+              user_follows_follower_idTouser: true,
+            },
+          });
+          if (result) {
+            const userFormat = getInfoFollower(result);
+            return responseMess.success(res, userFormat, 'Successfully!');
+          }
+        }
+      } else {
+        return responseMess.badRequest(res, '', 'Required Authentication!');
+      }
+    } catch (err) {
+      responseMess.error(res, 'Internal Server Error');
+    }
+  },
+  getFollowee: async (req, res) => {
+    try {
+      if (req?.headers?.authorization?.startsWith('Bearer')) {
+        const { authorization } = req.headers;
+        let newToken = authorization.replace('Bearer ', '');
+        let userSchema = checkAccessToken(newToken);
+        if (userSchema) {
+          let { user_id } = userSchema;
+          let result = await prisma.follows.findMany({
+            where: {
+              follower_id: Number(user_id),
+            },
+            include: {
+              user_follows_followee_idTouser: true,
+            },
+          });
+          if (result) {
+            const userFormat = getInfoFollowee(result);
+            return responseMess.success(res, userFormat, 'Successfully!');
+          }
+        }
+      } else {
+        return responseMess.badRequest(res, '', 'Required Authentication!');
+      }
     } catch (err) {
       responseMess.error(res, 'Internal Server Error');
     }
@@ -409,13 +465,6 @@ const userControllers = {
   searchFollower: async (req, res) => {
     try {
       responseMess.success(res, 'Search follower', 'Successfully!');
-    } catch (err) {
-      responseMess.error(res, 'Internal Server Error');
-    }
-  },
-  getFollowee: async (req, res) => {
-    try {
-      responseMess.success(res, 'Get all followee', 'Successfully!');
     } catch (err) {
       responseMess.error(res, 'Internal Server Error');
     }

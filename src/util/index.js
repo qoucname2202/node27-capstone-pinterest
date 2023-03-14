@@ -21,6 +21,54 @@ const createPasswordChangedToken = () => {
   return resetToken;
 };
 
+const getInfoFollower = (userList) => {
+  if (userList.length > 0) {
+    let newUserList = [];
+    userList.forEach((userItem) => {
+      let { follower_id, created_at, user_follows_follower_idTouser } = userItem;
+      let { user_id, name, email, age, avatar } = user_follows_follower_idTouser;
+      let newUserFollow = {
+        follower_id,
+        userInfo: {
+          user_id,
+          email,
+          name,
+          age,
+          avatar,
+        },
+        created_at,
+      };
+      newUserList.push(newUserFollow);
+    });
+    return newUserList;
+  }
+  return [];
+};
+
+const getInfoFollowee = (userList) => {
+  if (userList.length > 0) {
+    let newUserList = [];
+    userList.forEach((userItem) => {
+      let { followee_id, created_at, user_follows_followee_idTouser } = userItem;
+      let { user_id, name, email, age, avatar } = user_follows_followee_idTouser;
+      let newUserFollow = {
+        followee_id,
+        userInfo: {
+          user_id,
+          email,
+          name,
+          age,
+          avatar,
+        },
+        created_at,
+      };
+      newUserList.push(newUserFollow);
+    });
+    return newUserList;
+  }
+  return [];
+};
+
 const sendMail = async ({ email, html }) => {
   let transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com',
@@ -46,4 +94,6 @@ module.exports = {
   isCorrectPassword,
   createPasswordChangedToken,
   sendMail,
+  getInfoFollower,
+  getInfoFollowee,
 };
