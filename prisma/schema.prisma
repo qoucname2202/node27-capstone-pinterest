@@ -8,15 +8,15 @@ datasource db {
 }
 
 model comment {
-  comment_id   Int       @default(autoincrement())
+  comment_id   Int     @default(autoincrement())
   user_id      Int
   image_id     Int
-  content      String    @db.Text
+  content      String  @db.Text
   comment_star Int?
-  date_comment DateTime? @default(now()) @db.Timestamp(0)
-  updated_at   DateTime? @db.Timestamp(0)
-  image        image     @relation(fields: [image_id], references: [image_id], onDelete: NoAction, onUpdate: NoAction, map: "FK_IMG_COMMENT")
-  user         user      @relation(fields: [user_id], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "FR_USER_COMMENT")
+  date_comment String? @db.VarChar(300)
+  updated_at   String? @db.VarChar(300)
+  image        image   @relation(fields: [image_id], references: [image_id], onDelete: NoAction, onUpdate: NoAction, map: "FK_IMG_COMMENT")
+  user         user    @relation(fields: [user_id], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "FR_USER_COMMENT")
 
   @@id([comment_id, user_id, image_id])
   @@index([image_id], map: "FK_IMG_COMMENT")

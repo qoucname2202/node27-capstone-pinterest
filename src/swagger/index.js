@@ -42,6 +42,30 @@
 
 /**
  * @swagger
+ * /api/v1/comments/insert:
+ *  post:
+ *      tags: [Comment]
+ *      parameters:
+ *      - in: body
+ *        name: model
+ *        schema:
+ *           properties:
+ *             image_id:
+ *               type: number
+ *             content:
+ *               type: string
+ *      - in: header
+ *        description: Please enter Bearer [token]
+ *        name: Authorization
+ *        required: true
+ *        type: string
+ *      responses:
+ *          200:
+ *              description: success
+ */
+
+/**
+ * @swagger
  * /api/v1/users/:
  *  get:
  *      tags: [User]

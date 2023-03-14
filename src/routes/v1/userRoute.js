@@ -22,7 +22,5 @@ userRoute.post('/follow', verifyToken, userControllers.followUser);
 userRoute.post('/unfollow', verifyToken, userControllers.unfollowUser);
 userRoute.get('/follower', verifyToken, userControllers.getFollower);
 userRoute.get('/followee', verifyToken, userControllers.getFollowee);
-userRoute.get('/search-follower', userControllers.searchFollower);
-userRoute.get('/search-followee', userControllers.searchFollowee);
 
 module.exports = userRoute;

@@ -28,6 +28,7 @@
     "nodemailer": "^6.9.1",
     "nodemon": "^2.0.20",
     "prisma": "^4.10.1",
+    "remove-accents": "^0.4.4",
     "slugify": "^1.6.5",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^4.6.2",

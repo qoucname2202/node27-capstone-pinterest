@@ -12,6 +12,10 @@ const ValidateMessage = {
     AGE_FORMAT: 'Age must be a number',
     EMPTY: 'Age cannot be an empty field',
   },
+  ERROR_ID_NUMB: {
+    NUMB_FORMAT: 'Invalid field must be a number',
+    EMPTY: 'Please can not be an empty field',
+  },
   ERROR_NAME: {
     EMPTY: 'Name cannot be an empty field',
     MIN_LENGTH: 'The length of the parameter should be more than 3 character',

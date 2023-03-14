@@ -72,12 +72,22 @@ const validators = {
     return userSchema.validate(data, { stripUnknown: true, abortEarly: false });
   },
   commentValidate: (data) => {
-    const commentSchema = Joi.object({});
-    return commentSchema.validateAsync(data, { stripUnknown: true, abortEarly: false });
+    const commentSchema = Joi.object({
+      image_id: Joi.number().integer().required().messages({
+        'number.empty': ValidateMessage.ERROR_ID_NUMB.EMPTY,
+        'number.base': ValidateMessage.ERROR_ID_NUMB.NUMB_FORMAT,
+      }),
+      content: Joi.string().min(3).required().messages({
+        'string.empty': ValidateMessage.ERROR_NAME.EMPTY,
+        'string.min': ValidateMessage.ERROR_NAME.MIN_LENGTH,
+        'string.base': ValidateMessage.ERROR_NAME.NAME_FORMAT,
+      }),
+    });
+    return commentSchema.validate(data, { stripUnknown: true, abortEarly: false });
   },
   imageValidate: (data) => {
     const imageSchema = Joi.object({});
-    return imageSchema.validateAsync(data, { stripUnknown: true, abortEarly: false });
+    return imageSchema.validate(data, { stripUnknown: true, abortEarly: false });
   },
 };
 

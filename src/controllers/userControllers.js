@@ -462,20 +462,7 @@ const userControllers = {
       responseMess.error(res, 'Internal Server Error');
     }
   },
-  searchFollower: async (req, res) => {
-    try {
-      responseMess.success(res, 'Search follower', 'Successfully!');
-    } catch (err) {
-      responseMess.error(res, 'Internal Server Error');
-    }
-  },
-  searchFollowee: async (req, res) => {
-    try {
-      responseMess.success(res, 'Search followee', 'Successfully!');
-    } catch (err) {
-      responseMess.error(res, 'Internal Server Error');
-    }
-  },
+
   uploadAvatar: async (req, res) => {
     try {
       responseMess.success(res, 'Upload avatar', 'Successfully!');
