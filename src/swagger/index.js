@@ -74,6 +74,25 @@
 
 /**
  * @swagger
+ * /api/v1/users/getUserById:
+ *  get:
+ *      tags: [User]
+ *      parameters:
+ *       - in: query
+ *         name: user_id
+ *         type: string
+ *       - in: header
+ *         description: Please enter Bearer [token]
+ *         name: Authorization
+ *         required: true
+ *         type: string
+ *      responses:
+ *          200:
+ *              description: success
+ */
+
+/**
+ * @swagger
  * /api/v1/users/search:
  *  get:
  *      tags: [User]
@@ -100,6 +119,30 @@
  *       - in: query
  *         name: email
  *         type: string
+ *      responses:
+ *          200:
+ *              description: success
+ */
+
+/**
+ * @swagger
+ * /api/v1/users/update:
+ *  put:
+ *      tags: [User]
+ *      parameters:
+ *      - in: body
+ *        name: model
+ *        schema:
+ *           properties:
+ *             name:
+ *               type: string
+ *             age:
+ *               type: number
+ *      - in: header
+ *        description: Please enter Bearer [token]
+ *        name: Authorization
+ *        required: true
+ *        type: string
  *      responses:
  *          200:
  *              description: success

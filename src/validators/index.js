@@ -56,6 +56,21 @@ const validators = {
     });
     return userSchema.validate(data, { stripUnknown: true, abortEarly: false });
   },
+  updateUserValidate: (data) => {
+    const userSchema = Joi.object({
+      name: Joi.string().min(3).max(30).required().messages({
+        'string.empty': ValidateMessage.ERROR_NAME.EMPTY,
+        'string.min': ValidateMessage.ERROR_NAME.MIN_LENGTH,
+        'string.max': ValidateMessage.ERROR_NAME.MAX_LENGTH,
+        'string.base': ValidateMessage.ERROR_NAME.NAME_FORMAT,
+      }),
+      age: Joi.number().integer().required().messages({
+        'number.empty': ValidateMessage.ERROR_AGE.EMPTY,
+        'number.base': ValidateMessage.ERROR_AGE.AGE_FORMAT,
+      }),
+    });
+    return userSchema.validate(data, { stripUnknown: true, abortEarly: false });
+  },
   commentValidate: (data) => {
     const commentSchema = Joi.object({});
     return commentSchema.validateAsync(data, { stripUnknown: true, abortEarly: false });

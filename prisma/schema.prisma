@@ -73,7 +73,7 @@ model user {
   password_reset_token              String?      @db.VarChar(500)
   password_reset_expires            String?      @db.VarChar(500)
   created_at                        DateTime?    @default(now()) @db.Timestamp(0)
-  update_at                         DateTime?    @db.Timestamp(0)
+  updated_at                        String?      @db.VarChar(300)
   comment                           comment[]
   follows_follows_followee_idTouser follows[]    @relation("follows_followee_idTouser")
   follows_follows_follower_idTouser follows[]    @relation("follows_follower_idTouser")

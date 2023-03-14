@@ -6,7 +6,8 @@ const prisma = new PrismaClient();
 const validators = require('../validators');
 const Joi = require('joi');
 const crypto = require('crypto');
-const { createPasswordChangedToken, sendMail, hashPassword } = require('../util');
+const { format } = require('date-fns');
+const { createPasswordChangedToken, sendMail, hashPassword, formatTimeStamp } = require('../util');
 const { generateToken, generateRefreshToken, checkRefreshToken, checkAccessToken } = require('../middlewares/jwt');
 const ValidateMessage = require('../exceptions/ValidateMessage');
 
@@ -195,7 +196,7 @@ const userControllers = {
               age: true,
               avatar: true,
               created_at: true,
-              update_at: true,
+              updated_at: true,
             },
           });
           return responseMess.success(res, result, 'Successfully!');
@@ -224,7 +225,7 @@ const userControllers = {
           age: true,
           avatar: true,
           created_at: true,
-          update_at: true,
+          updated_at: true,
         },
       });
       if (result) {
@@ -236,7 +237,67 @@ const userControllers = {
   },
   updateProfile: async (req, res) => {
     try {
-      responseMess.success(res, 'Update profile', 'Successfully!');
+      if (req?.headers?.authorization?.startsWith('Bearer')) {
+        const { authorization } = req.headers;
+        let newToken = authorization.replace('Bearer ', '');
+        let userSchema = checkAccessToken(newToken);
+        if (userSchema) {
+          let { user_id } = userSchema;
+          let { error } = await validators.updateUserValidate(req.body);
+          if (!error) {
+            let date_update = format(new Date(), 'yyyy-MM-dd\tHH:mm:ss').split('\t').join(' ');
+            const result = await prisma.user.update({
+              where: {
+                user_id: user_id,
+              },
+              data: {
+                ...req.body,
+                updated_at: date_update,
+              },
+              select: {
+                user_id: true,
+                email: true,
+                name: true,
+                age: true,
+                created_at: true,
+                updated_at: true,
+              },
+            });
+            return responseMess.success(res, result, 'Update user successfully!');
+          } else {
+            return responseMess.badRequest(res, '', error.details[0].message);
+          }
+        }
+      } else {
+        return responseMess.badRequest(res, '', 'User does not exists!');
+      }
+    } catch (err) {
+      responseMess.error(res, 'Internal Server Error');
+    }
+  },
+  getUserById: async (req, res) => {
+    try {
+      let { user_id } = req.query;
+      const result = await prisma.user.findUnique({
+        where: {
+          user_id: Number(user_id),
+        },
+        select: {
+          user_id: true,
+          email: true,
+          name: true,
+          age: true,
+          avatar: true,
+          isAdmin: true,
+          created_at: true,
+          updated_at: true,
+        },
+      });
+      if (result) {
+        return responseMess.success(res, result, 'Successfully!');
+      } else {
+        return responseMess.notFound(res, '', 'User does not exists!');
+      }
     } catch (err) {
       responseMess.error(res, 'Internal Server Error');
     }
