@@ -8,7 +8,42 @@ const { checkAccessToken } = require('../middlewares/jwt');
 const commentControllers = {
   getCommentByImageId: async (req, res) => {
     try {
-      responseMess.success(res, 'Get comment by imageID', 'Successfully!');
+      if (req?.headers?.authorization?.startsWith('Bearer')) {
+        const { authorization } = req.headers;
+        let newToken = authorization.replace('Bearer ', '');
+        let userSchema = checkAccessToken(newToken);
+        if (userSchema) {
+          let { image_id } = req.query;
+          let imageExist = await prisma.image.findUnique({
+            where: {
+              image_id: Number(image_id),
+            },
+          });
+          if (imageExist) {
+            let result = await prisma.comment.findMany({
+              where: {
+                image_id: Number(image_id),
+              },
+              select: {
+                comment_id: true,
+                user_id: true,
+                content: true,
+                comment_star: true,
+                date_comment: true,
+              },
+            });
+            if (result) {
+              return responseMess.success(res, result, 'Successfully!');
+            }
+          } else {
+            return responseMess.badRequest(res, '', 'Image does not exists!');
+          }
+        } else {
+          return responseMess.badRequest(res, '', 'User does not exists!');
+        }
+      } else {
+        return responseMess.badRequest(res, '', 'Required Authentication!');
+      }
     } catch (err) {
       responseMess.error(res, 'Internal Server Error');
     }
@@ -116,10 +151,37 @@ const commentControllers = {
       responseMess.error(res, 'Internal Server Error');
     }
   },
-
   deleteComment: async (req, res) => {
     try {
-      responseMess.success(res, 'Deleted comment by id', 'Successfully!');
+      if (req?.headers?.authorization?.startsWith('Bearer')) {
+        const { authorization } = req.headers;
+        let newToken = authorization.replace('Bearer ', '');
+        let userSchema = checkAccessToken(newToken);
+        if (userSchema) {
+          let { comment_id } = req.query;
+          let commentExist = await prisma.comment.findFirst({
+            where: {
+              comment_id: Number(comment_id),
+            },
+          });
+          if (commentExist) {
+            let result = await prisma.comment.deleteMany({
+              where: {
+                comment_id: Number(comment_id),
+              },
+            });
+            if (result) {
+              return responseMess.success(res, '', 'Delete comment successfully!');
+            }
+          } else {
+            return responseMess.badRequest(res, '', 'User does not comment image!');
+          }
+        } else {
+          return responseMess.badRequest(res, '', 'User does not exists!');
+        }
+      } else {
+        return responseMess.badRequest(res, '', 'Required Authentication!');
+      }
     } catch (err) {
       responseMess.error(res, 'Internal Server Error');
     }

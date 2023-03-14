@@ -42,6 +42,25 @@
 
 /**
  * @swagger
+ * /api/v1/comments/getAll:
+ *  get:
+ *      tags: [Comment]
+ *      parameters:
+ *      - in: query
+ *        name: image_id
+ *        type: number
+ *      - in: header
+ *        description: Please enter Bearer [token]
+ *        name: Authorization
+ *        required: true
+ *        type: string
+ *      responses:
+ *          200:
+ *              description: success
+ */
+
+/**
+ * @swagger
  * /api/v1/comments/insert:
  *  post:
  *      tags: [Comment]
@@ -81,6 +100,25 @@
  *               type: string
  *             comment_star:
  *               type: number
+ *      - in: header
+ *        description: Please enter Bearer [token]
+ *        name: Authorization
+ *        required: true
+ *        type: string
+ *      responses:
+ *          200:
+ *              description: success
+ */
+
+/**
+ * @swagger
+ * /api/v1/comments/delete:
+ *  delete:
+ *      tags: [Comment]
+ *      parameters:
+ *      - in: query
+ *        name: comment_id
+ *        type: number
  *      - in: header
  *        description: Please enter Bearer [token]
  *        name: Authorization
