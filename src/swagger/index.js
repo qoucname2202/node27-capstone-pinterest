@@ -169,6 +169,44 @@
 
 /**
  * @swagger
+ * /api/v1/users/follow:
+ *  post:
+ *      tags: [User]
+ *      parameters:
+ *       - in: query
+ *         name: user_id
+ *         type: number
+ *       - in: header
+ *         description: Please enter Bearer [token]
+ *         name: Authorization
+ *         required: true
+ *         type: string
+ *      responses:
+ *          200:
+ *              description: success
+ */
+
+/**
+ * @swagger
+ * /api/v1/users/unfollow:
+ *  post:
+ *      tags: [User]
+ *      parameters:
+ *       - in: query
+ *         name: user_id
+ *         type: number
+ *       - in: header
+ *         description: Please enter Bearer [token]
+ *         name: Authorization
+ *         required: true
+ *         type: string
+ *      responses:
+ *          200:
+ *              description: success
+ */
+
+/**
+ * @swagger
  * /api/v1/users/test-token:
  *  post:
  *      tags: [User]

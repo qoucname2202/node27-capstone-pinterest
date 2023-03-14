@@ -302,14 +302,103 @@ const userControllers = {
       responseMess.error(res, 'Internal Server Error');
     }
   },
-  uploadAvatar: async (req, res) => {
+  followUser: async (req, res) => {
     try {
-      responseMess.success(res, 'Upload avatar', 'Successfully!');
+      if (req?.headers?.authorization?.startsWith('Bearer')) {
+        const { authorization } = req.headers;
+        let newToken = authorization.replace('Bearer ', '');
+        let userSchema = checkAccessToken(newToken);
+        if (userSchema) {
+          let { user_id } = userSchema;
+          if (Number(user_id) !== Number(req.query.user_id)) {
+            const userTofollow = await prisma.user.findUnique({
+              where: {
+                user_id: Number(req.query.user_id),
+              },
+            });
+            if (!userTofollow) {
+              return responseMess.badRequest(res, '', 'User does not exists!');
+            } else {
+              const checkUserFollow = await prisma.follows.findMany({
+                where: {
+                  follower_id: Number(user_id),
+                  followee_id: Number(req.query.user_id),
+                },
+              });
+              if (checkUserFollow.length === 0) {
+                let result = await prisma.follows.create({
+                  data: {
+                    follower_id: Number(user_id),
+                    followee_id: Number(req.query.user_id),
+                    created_at: format(new Date(), 'yyyy-MM-dd\tHH:mm:ss').split('\t').join(' '),
+                  },
+                });
+                if (result) {
+                  return responseMess.success(res, result, 'User has been followed!');
+                }
+              } else {
+                return responseMess.badRequest(res, '', 'You already follow this user!');
+              }
+            }
+          } else {
+            return responseMess.badRequest(res, '', 'You can not follow yourself!');
+          }
+        }
+      } else {
+        return responseMess.badRequest(res, '', 'Required Authentication!');
+      }
     } catch (err) {
       responseMess.error(res, 'Internal Server Error');
     }
   },
-
+  unfollowUser: async (req, res) => {
+    try {
+      if (req?.headers?.authorization?.startsWith('Bearer')) {
+        const { authorization } = req.headers;
+        let newToken = authorization.replace('Bearer ', '');
+        let userSchema = checkAccessToken(newToken);
+        if (userSchema) {
+          let { user_id } = userSchema;
+          if (Number(user_id) !== Number(req.query.user_id)) {
+            const userTofollow = await prisma.user.findUnique({
+              where: {
+                user_id: Number(req.query.user_id),
+              },
+            });
+            if (!userTofollow) {
+              return responseMess.badRequest(res, '', 'User does not exists!');
+            } else {
+              const checkUserFollow = await prisma.follows.findMany({
+                where: {
+                  follower_id: Number(user_id),
+                  followee_id: Number(req.query.user_id),
+                },
+              });
+              if (checkUserFollow.length !== 0) {
+                let result = await prisma.follows.deleteMany({
+                  where: {
+                    follower_id: Number(user_id),
+                    followee_id: Number(req.query.user_id),
+                  },
+                });
+                if (result) {
+                  return responseMess.success(res, '', 'User has been unfollowed!');
+                }
+              } else {
+                return responseMess.badRequest(res, '', 'You don not follow this user!');
+              }
+            }
+          } else {
+            return responseMess.badRequest(res, '', 'You can not unfollow yourself!');
+          }
+        }
+      } else {
+        return responseMess.badRequest(res, '', 'Required Authentication!');
+      }
+    } catch (err) {
+      responseMess.error(res, 'Internal Server Error');
+    }
+  },
   getFollower: async (req, res) => {
     try {
       responseMess.success(res, 'Get follower', 'Successfully!');
@@ -334,6 +423,13 @@ const userControllers = {
   searchFollowee: async (req, res) => {
     try {
       responseMess.success(res, 'Search followee', 'Successfully!');
+    } catch (err) {
+      responseMess.error(res, 'Internal Server Error');
+    }
+  },
+  uploadAvatar: async (req, res) => {
+    try {
+      responseMess.success(res, 'Upload avatar', 'Successfully!');
     } catch (err) {
       responseMess.error(res, 'Internal Server Error');
     }

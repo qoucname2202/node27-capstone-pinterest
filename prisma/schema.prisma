@@ -26,9 +26,9 @@ model comment {
 model follows {
   follower_id                    Int
   followee_id                    Int
-  created_at                     DateTime? @default(now()) @db.Timestamp(0)
-  user_follows_followee_idTouser user      @relation("follows_followee_idTouser", fields: [followee_id], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "FK_FEE")
-  user_follows_follower_idTouser user      @relation("follows_follower_idTouser", fields: [follower_id], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "FR_FER")
+  created_at                     String? @db.VarChar(300)
+  user_follows_followee_idTouser user    @relation("follows_followee_idTouser", fields: [followee_id], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "FK_FEE")
+  user_follows_follower_idTouser user    @relation("follows_follower_idTouser", fields: [follower_id], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "FR_FER")
 
   @@id([follower_id, followee_id])
   @@index([followee_id], map: "FK_FEE")

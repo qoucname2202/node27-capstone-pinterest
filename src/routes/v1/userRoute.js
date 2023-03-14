@@ -18,6 +18,8 @@ userRoute.get('/save', userControllers.savedImage);
 userRoute.get('/images', userControllers.getImagesUserCreate);
 userRoute.get('/saved-images', userControllers.getImagesUserSaved);
 
+userRoute.post('/follow', verifyToken, userControllers.followUser);
+userRoute.post('/unfollow', verifyToken, userControllers.unfollowUser);
 userRoute.get('/follower', userControllers.getFollower);
 userRoute.get('/search-follower', userControllers.searchFollower);
 userRoute.get('/followee', userControllers.getFollowee);
