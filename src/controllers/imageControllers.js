@@ -1,25 +1,52 @@
 const responseMess = require('../config/response');
-const moment = require('moment');
-const config = require('../config');
+const { PrismaClient } = require('@prisma/client');
+const prisma = new PrismaClient();
+const { format } = require('date-fns');
+const validators = require('../validators');
+const { checkAccessToken } = require('../middlewares/jwt');
 
 const imageControllers = {
   getAllImages: async (req, res) => {
     try {
-      responseMess.success(res, 'Get all images', 'Successfully!');
+      let ressult = await prisma.image.findMany();
+      if (ressult) {
+        responseMess.success(res, ressult, 'Successfully!');
+      }
     } catch (err) {
       responseMess.error(res, 'Internal Server Error');
     }
   },
   getImageById: async (req, res) => {
     try {
-      responseMess.success(res, 'Get image by id', 'Successfully!');
+      let { image_id } = req.query;
+      const result = await prisma.image.findUnique({
+        where: {
+          image_id: Number(image_id),
+        },
+      });
+      if (result) {
+        return responseMess.success(res, result, 'Successfully!');
+      } else {
+        return responseMess.notFound(res, '', 'Image does not exists!');
+      }
     } catch (err) {
       responseMess.error(res, 'Internal Server Error');
     }
   },
   searchImage: async (req, res) => {
     try {
-      responseMess.success(res, 'Search image', 'Successfully!');
+      let { keyword } = req.query;
+      let imageNameFormat = keyword.trim().toLowerCase();
+      let result = await prisma.image.findMany({
+        where: {
+          image_name: {
+            contains: imageNameFormat,
+          },
+        },
+      });
+      if (result) {
+        return responseMess.success(res, result, 'Successfully!');
+      }
     } catch (err) {
       responseMess.error(res, 'Internal Server Error');
     }

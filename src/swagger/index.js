@@ -131,6 +131,16 @@
 
 /**
  * @swagger
+ * /api/v1/images/:
+ *  get:
+ *      tags: [Image]
+ *      responses:
+ *          200:
+ *              description: success
+ */
+
+/**
+ * @swagger
  * /api/v1/users/:
  *  get:
  *      tags: [User]
@@ -139,6 +149,34 @@
  *         description: Please enter Bearer [token]
  *         name: Authorization
  *         required: true
+ *         type: string
+ *      responses:
+ *          200:
+ *              description: success
+ */
+
+/**
+ * @swagger
+ * /api/v1/images/getImageById:
+ *  get:
+ *      tags: [Image]
+ *      parameters:
+ *       - in: query
+ *         name: image_id
+ *         type: number
+ *      responses:
+ *          200:
+ *              description: success
+ */
+
+/**
+ * @swagger
+ * /api/v1/images/search:
+ *  get:
+ *      tags: [Image]
+ *      parameters:
+ *       - in: query
+ *         name: keyword
  *         type: string
  *      responses:
  *          200:
