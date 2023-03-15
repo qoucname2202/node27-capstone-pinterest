@@ -19,15 +19,20 @@ const imageControllers = {
   getImageById: async (req, res) => {
     try {
       let { image_id } = req.query;
-      const result = await prisma.image.findUnique({
-        where: {
-          image_id: Number(image_id),
-        },
-      });
-      if (result) {
-        return responseMess.success(res, result, 'Successfully!');
+      let { error } = await validators.numberValidate({ image_id: Number(image_id) });
+      if (!error) {
+        const result = await prisma.image.findUnique({
+          where: {
+            image_id: Number(image_id),
+          },
+        });
+        if (result) {
+          return responseMess.success(res, result, 'Successfully!');
+        } else {
+          return responseMess.notFound(res, '', 'Image does not exists!');
+        }
       } else {
-        return responseMess.notFound(res, '', 'Image does not exists!');
+        return responseMess.badRequest(res, '', error.details[0].message);
       }
     } catch (err) {
       responseMess.error(res, 'Internal Server Error');
@@ -51,6 +56,36 @@ const imageControllers = {
       responseMess.error(res, 'Internal Server Error');
     }
   },
+  deleteImage: async (req, res) => {
+    try {
+      let { image_id } = req.query;
+      let { error } = await validators.numberValidate({ image_id: Number(image_id) });
+      if (!error) {
+        let imageExist = await prisma.image.findUnique({
+          where: {
+            image_id: Number(image_id),
+          },
+        });
+        if (imageExist) {
+          let result = await prisma.image.delete({
+            where: {
+              image_id: Number(image_id),
+            },
+          });
+          if (result) {
+            return responseMess.success(res, '', 'Delete image successfully!');
+          }
+        } else {
+          return responseMess.badRequest(res, '', 'Image does not exists!');
+        }
+      } else {
+        return responseMess.badRequest(res, '', error.details[0].message);
+      }
+    } catch (err) {
+      responseMess.error(res, 'Internal Server Error');
+    }
+  },
+
   checkSaveImage: async (req, res) => {
     try {
       responseMess.success(res, 'Check save image', 'Successfully!');
@@ -58,13 +93,7 @@ const imageControllers = {
       responseMess.error(res, 'Internal Server Error');
     }
   },
-  deleteImage: async (req, res) => {
-    try {
-      responseMess.success(res, 'Deleted image', 'Successfully!');
-    } catch (err) {
-      responseMess.error(res, 'Internal Server Error');
-    }
-  },
+
   uploadImage: async (req, res) => {
     try {
       responseMess.success(res, 'Upload image', 'Successfully!');

@@ -101,6 +101,15 @@ const validators = {
     });
     return commentSchema.validate(data, { stripUnknown: true, abortEarly: false });
   },
+  numberValidate: (data) => {
+    const numberSchema = Joi.object({
+      image_id: Joi.number().integer().required().messages({
+        'number.empty': ValidateMessage.ERROR_ID_NUMB.EMPTY,
+        'number.base': ValidateMessage.ERROR_ID_NUMB.NUMB_FORMAT,
+      }),
+    });
+    return numberSchema.validate(data, { stripUnknown: true, abortEarly: false });
+  },
   imageValidate: (data) => {
     const imageSchema = Joi.object({});
     return imageSchema.validate(data, { stripUnknown: true, abortEarly: false });

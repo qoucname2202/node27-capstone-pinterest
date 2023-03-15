@@ -5,8 +5,8 @@ const imageRoute = express.Router();
 imageRoute.get('/', imageControllers.getAllImages);
 imageRoute.get('/getImageById', imageControllers.getImageById);
 imageRoute.get('/search', imageControllers.searchImage);
+imageRoute.delete('/delete', imageControllers.deleteImage);
 imageRoute.get('/is-saved', imageControllers.checkSaveImage);
-imageRoute.get('/delete', imageControllers.deleteImage);
 imageRoute.get('/upload', imageControllers.uploadImage);
 imageRoute.get('/create', imageControllers.createImageByUser);
 
