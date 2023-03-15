@@ -329,6 +329,22 @@
 
 /**
  * @swagger
+ * /api/v1/users/saves:
+ *  get:
+ *      tags: [User]
+ *      parameters:
+ *       - in: header
+ *         description: Please enter Bearer [token]
+ *         name: Authorization
+ *         required: true
+ *         type: string
+ *      responses:
+ *          200:
+ *              description: success
+ */
+
+/**
+ * @swagger
  * /api/v1/users/forgot-password:
  *  get:
  *      tags: [User]
@@ -411,6 +427,25 @@
  *      parameters:
  *       - in: query
  *         name: user_id
+ *         type: number
+ *       - in: header
+ *         description: Please enter Bearer [token]
+ *         name: Authorization
+ *         required: true
+ *         type: string
+ *      responses:
+ *          200:
+ *              description: success
+ */
+
+/**
+ * @swagger
+ * /api/v1/users/save-image:
+ *  post:
+ *      tags: [User]
+ *      parameters:
+ *       - in: query
+ *         name: image_id
  *         type: number
  *       - in: header
  *         description: Please enter Bearer [token]

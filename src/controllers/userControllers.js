@@ -7,7 +7,14 @@ const validators = require('../validators');
 const Joi = require('joi');
 const crypto = require('crypto');
 const { format } = require('date-fns');
-const { createPasswordChangedToken, sendMail, hashPassword, getInfoFollower, getInfoFollowee } = require('../util');
+const {
+  createPasswordChangedToken,
+  sendMail,
+  hashPassword,
+  getInfoFollower,
+  getInfoFollowee,
+  getImageUserSave,
+} = require('../util');
 const { generateToken, generateRefreshToken, checkRefreshToken, checkAccessToken } = require('../middlewares/jwt');
 const ValidateMessage = require('../exceptions/ValidateMessage');
 
@@ -508,9 +515,55 @@ const userControllers = {
       responseMess.error(res, 'Internal Server Error');
     }
   },
+
   savedImage: async (req, res) => {
     try {
-      responseMess.success(res, 'Save images', 'Successfully!');
+      if (req?.headers?.authorization?.startsWith('Bearer')) {
+        const { authorization } = req.headers;
+        let newToken = authorization.replace('Bearer ', '');
+        let userSchema = checkAccessToken(newToken);
+        if (userSchema) {
+          let { user_id } = userSchema;
+          let { image_id } = req.query;
+          let { error } = await validators.numberValidate({ image_id: Number(image_id) });
+          if (!error) {
+            let imageExist = await prisma.image.findUnique({
+              where: {
+                image_id: Number(image_id),
+              },
+            });
+            if (imageExist) {
+              let saveImageExist = await prisma.save_image.findMany({
+                where: {
+                  user_id: user_id,
+                  image_id: Number(image_id),
+                },
+              });
+              if (saveImageExist.length === 0) {
+                let imageSchema = {
+                  user_id,
+                  image_id: Number(image_id),
+                  date_save: format(new Date(), 'yyyy-MM-dd\tHH:mm:ss').split('\t').join(' '),
+                };
+                let result = await prisma.save_image.create({ data: imageSchema });
+                if (result) {
+                  return responseMess.success(res, imageSchema, 'Save image successfully!');
+                }
+              } else {
+                return responseMess.badRequest(res, '', 'User has already save image!');
+              }
+            } else {
+              return responseMess.badRequest(res, '', 'Image does not exists!');
+            }
+          } else {
+            return responseMess.badRequest(res, '', error.details[0].message);
+          }
+        } else {
+          return responseMess.badRequest(res, '', 'User does not exists!');
+        }
+      } else {
+        return responseMess.badRequest(res, '', 'Required Authentication!');
+      }
     } catch (err) {
       responseMess.error(res, 'Internal Server Error');
     }
@@ -518,7 +571,43 @@ const userControllers = {
 
   getImagesUserSaved: async (req, res) => {
     try {
-      responseMess.success(res, 'Get images user saved', 'Successfully!');
+      if (req?.headers?.authorization?.startsWith('Bearer')) {
+        const { authorization } = req.headers;
+        let newToken = authorization.replace('Bearer ', '');
+        let userSchema = checkAccessToken(newToken);
+        if (userSchema) {
+          let { user_id } = userSchema;
+          let userExist = await prisma.user.findUnique({
+            where: {
+              user_id: user_id,
+            },
+          });
+          if (userExist) {
+            let result = await prisma.save_image.findMany({
+              where: {
+                user_id: user_id,
+              },
+              include: {
+                image: true,
+              },
+            });
+            if (result) {
+              let imageSave = getImageUserSave(result);
+              return responseMess.success(res, imageSave, 'Successfully!');
+            }
+          } else {
+            return responseMess.badRequest(
+              res,
+              {
+                user_id,
+              },
+              'User does not exists!',
+            );
+          }
+        }
+      } else {
+        return responseMess.badRequest(res, '', 'Required Authentication!');
+      }
     } catch (err) {
       responseMess.error(res, 'Internal Server Error');
     }

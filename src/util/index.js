@@ -68,6 +68,19 @@ const getInfoFollowee = (userList) => {
   return [];
 };
 
+const getImageUserSave = (imageList) => {
+  if (imageList.length > 0) {
+    let newImageList = [];
+    imageList.forEach((imageItem) => {
+      let { image } = imageItem;
+      let { user_id, ...orther } = image;
+      newImageList.push({ ...orther });
+    });
+    return newImageList;
+  }
+  return [];
+};
+
 const sendMail = async ({ email, html }) => {
   let transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com',
@@ -95,4 +108,5 @@ module.exports = {
   sendMail,
   getInfoFollower,
   getInfoFollowee,
+  getImageUserSave,
 };
