@@ -313,6 +313,22 @@
 
 /**
  * @swagger
+ * /api/v1/users/images:
+ *  get:
+ *      tags: [User]
+ *      parameters:
+ *       - in: header
+ *         description: Please enter Bearer [token]
+ *         name: Authorization
+ *         required: true
+ *         type: string
+ *      responses:
+ *          200:
+ *              description: success
+ */
+
+/**
+ * @swagger
  * /api/v1/users/forgot-password:
  *  get:
  *      tags: [User]

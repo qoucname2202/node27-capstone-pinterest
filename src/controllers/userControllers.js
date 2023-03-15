@@ -462,10 +462,48 @@ const userControllers = {
       responseMess.error(res, 'Internal Server Error');
     }
   },
-
-  uploadAvatar: async (req, res) => {
+  getImagesUserCreate: async (req, res) => {
     try {
-      responseMess.success(res, 'Upload avatar', 'Successfully!');
+      if (req?.headers?.authorization?.startsWith('Bearer')) {
+        const { authorization } = req.headers;
+        let newToken = authorization.replace('Bearer ', '');
+        let userSchema = checkAccessToken(newToken);
+        if (userSchema) {
+          let { user_id } = userSchema;
+          let userExist = await prisma.user.findUnique({
+            where: {
+              user_id: user_id,
+            },
+          });
+          if (userExist) {
+            let result = await prisma.image.findMany({
+              where: {
+                user_id: user_id,
+              },
+              select: {
+                image_id: true,
+                image_name: true,
+                url: true,
+                description: true,
+                created_at: true,
+              },
+            });
+            if (result) {
+              return responseMess.success(res, result, 'Successfully!');
+            }
+          } else {
+            return responseMess.badRequest(
+              res,
+              {
+                user_id,
+              },
+              'User does not exists!',
+            );
+          }
+        }
+      } else {
+        return responseMess.badRequest(res, '', 'Required Authentication!');
+      }
     } catch (err) {
       responseMess.error(res, 'Internal Server Error');
     }
@@ -477,16 +515,17 @@ const userControllers = {
       responseMess.error(res, 'Internal Server Error');
     }
   },
-  getImagesUserCreate: async (req, res) => {
+
+  getImagesUserSaved: async (req, res) => {
     try {
-      responseMess.success(res, 'Get images user create', 'Successfully!');
+      responseMess.success(res, 'Get images user saved', 'Successfully!');
     } catch (err) {
       responseMess.error(res, 'Internal Server Error');
     }
   },
-  getImagesUserSaved: async (req, res) => {
+  uploadAvatar: async (req, res) => {
     try {
-      responseMess.success(res, 'Get images user saved', 'Successfully!');
+      responseMess.success(res, 'Upload avatar', 'Successfully!');
     } catch (err) {
       responseMess.error(res, 'Internal Server Error');
     }

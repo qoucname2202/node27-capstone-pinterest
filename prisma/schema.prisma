@@ -51,9 +51,9 @@ model image {
 model save_image {
   user_id   Int
   image_id  Int
-  date_save DateTime? @default(now()) @db.Timestamp(0)
-  image     image     @relation(fields: [image_id], references: [image_id], onDelete: NoAction, onUpdate: NoAction, map: "FK_IMG_SAVED")
-  user      user      @relation(fields: [user_id], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "FR_USER_SAVED")
+  date_save String? @db.VarChar(300)
+  image     image   @relation(fields: [image_id], references: [image_id], onDelete: NoAction, onUpdate: NoAction, map: "FK_IMG_SAVED")
+  user      user    @relation(fields: [user_id], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "FR_USER_SAVED")
 
   @@id([user_id, image_id])
   @@index([image_id], map: "FK_IMG_SAVED")
